@@ -1,0 +1,59 @@
+<?php
+require_once realpath(dirname(__FILE__) . "/../../vendor/autoload.php");
+
+use Simphle\Server;
+
+Server::init(dirname(__FILE__) . '/../../');
+
+if (!($directoryIndex = getenv('index'))) {
+    $directoryIndex = Server::DIRECTORY_INDEX;
+}
+
+
+// If requesting a directory then serve the default index
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$ext = pathinfo($path, PATHINFO_EXTENSION);
+if (empty($ext)) {
+    if (is_dir($_SERVER['DOCUMENT_ROOT'] . $path)) {
+        $path = rtrim($path, '/') . '/' . $directoryIndex;
+    } elseif ($controller = getenv('controller')) {
+        
+        // Use provided front controller
+        $path = '/' . $controller;
+
+    } else {
+        
+        // Use index.php as front controller
+        $path = '/' . $directoryIndex;
+    }
+}
+
+// If the file exists then return false and let the server handle it
+if (is_readable($_SERVER['DOCUMENT_ROOT'] . $path)) {
+
+    // Access logged by the server process
+    Server::logAccess(200);
+    return false;
+
+} elseif($error404 = getenv('error_404')) {
+    
+    // Use the app error 404 feature...
+
+    // Log the original URL
+    Server::logAccess(404);
+
+    // Rewrite the internal URI to the Error URI/Document
+    $_SERVER['REQUEST_URI'] = $error404;
+
+    // Exec the index document or front controller and exit
+    if (!empty($controller)) {
+        include $_SERVER['DOCUMENT_ROOT'] . '/' . $controller;
+    } else {
+        include $_SERVER['DOCUMENT_ROOT'] . '/' . $directoryIndex;
+    }
+    exit;
+}
+
+// Default behavior
+Server::logAccess(404);
+Server::quit(404);

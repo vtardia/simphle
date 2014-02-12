@@ -1,0 +1,26 @@
+{
+    "name": "vtardia/simphle",
+    "description": "A quick and simple PHP server for development",
+    "version": "1.0.0-dev",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vito Tardia",
+            "email": "vito@tardia.me",
+            "homepage": "http://vito.tardia.me"
+        }
+    ],
+    "keywords": ["server"],
+    "require": {
+        "php": ">=5.4",
+        "ext-http": "*",
+        "symfony/process": "*",
+        "monolog/monolog": "*"
+    },
+    "autoload": {
+        "psr-0": { "Simphle": "src/" }
+    },
+    "archive": {
+        "exclude": ["vendor", ".DS_Store", "*.log", "TODO.md"]
+    }
+}

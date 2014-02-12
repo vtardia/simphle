@@ -1,0 +1,167 @@
+#!/usr/bin/env php
+<?php
+
+require_once realpath(dirname(__FILE__) . "/../vendor/autoload.php");
+
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\ProcessBuilder;
+
+// Set some defaults
+$config = array(
+    'cwd' => getcwd(),
+    'host' => '127.0.0.1',
+    'port' => 10000
+);
+
+$config['docroot'] = $config['cwd'];
+
+// Look for a server file inside the working directory
+// and parse the parameters, overriding defaults
+if (is_readable($config['cwd'] . '/server.json')) {
+
+    $data = json_decode(
+        file_get_contents($config['cwd'] . '/server.json'),
+        true
+    );
+    
+    if (JSON_ERROR_NONE !== json_last_error()) {
+        echo "Invalid server configuration file\n";
+        exit(1);
+    }
+    
+    $params = array(
+        'host',
+        'port',
+        'docroot',
+        'ini',
+        'router',
+        'controller',
+        'index',
+        'errors'
+    );
+    
+    foreach ($params as $key) {
+        if (!empty($data[$key])) {
+            $config[$key] = $data[$key];
+        }
+    }
+}
+
+// Compose the header
+$header = sprintf(
+    'PHP %s Simple Development Server started at %s' . "\n"
+    .'Listening on http://%s:%d' . "\n"
+    .'Document root is %s' . "\n"
+    .'Press Ctrl-C to quit.',
+    PHP_VERSION,
+    date(DATE_RFC1123),
+    $config['host'],
+    $config['port'],
+    realpath($config['docroot'])
+);
+
+// Set default arguments for the process command line
+$args = array(
+    'php',
+    '-S',
+    sprintf('%s:%d', $config['host'], $config['port']),
+    '-t',
+    realpath($config['docroot'])
+);
+
+// Parse INI file declaration
+if (!empty($config['ini'])) {
+
+    // Search for INI file in working dir
+    $inifile = realpath($config['cwd']) . '/' . $config['ini'];
+    if (is_readable($inifile)) {
+        $args[] = '-c';
+        $args[] = $inifile;
+    } else {
+        
+        // Search for a preset INI
+        $inifile = realpath(
+            dirname(__FILE__) . "/../etc/" . $config['ini'] . '.ini'
+        );
+
+        if (is_readable($inifile)) {
+            $args[] = '-c';
+            $args[] = $inifile;
+        } else {
+            printf("Unable to find INI file '%s'\n", $config['ini']);
+            exit(3);
+        }
+
+    }
+}
+
+// Parse router file declaration
+if (!empty($config['router'])) {
+    
+    // Search for router in working dir
+    $router = realpath($config['cwd']) . '/' . $config['router'];
+    if (is_readable($router)) {
+        $args[] = $router;
+    } else {
+        
+        // Search for a preset router
+        $router = realpath(
+            dirname(__FILE__) . "/../share/routers/"
+            . $config['router'] . '.php'
+        );
+
+        if (is_readable($router)) {
+            $args[] = $router;
+        } else {
+            printf("Unable to find router file '%s'\n", $config['router']);
+            exit(2);
+        }
+
+    }
+}
+
+// Build the process object with ProcessBuilder
+$builder = new ProcessBuilder($args);
+
+// Parse the front controller setting
+if (!empty($config['controller'])) {
+    $builder->setEnv('controller', $config['controller']);
+}
+
+// Parse the custom directory index
+if (!empty($config['index'])) {
+    $builder->setEnv('index', $config['index']);
+}
+
+// Parse the custom error pages
+if (!empty($config['errors']) && is_array($config['errors'])) {
+    foreach($config['errors'] as $error_code => $error_page) {
+        $builder->setEnv('error_' . $error_code, $error_page);
+    }
+}
+
+// Start the web server process
+$process = $builder->getProcess();
+$process->setTimeout(null)->start();
+echo $process->getOutput();
+echo $header, "\n";
+
+// Process loop
+while ($process->isRunning()) {
+
+    // Intercept STDOUT and STDERR
+    $process->wait(function ($type, $buffer) use ($config) {
+
+        if (Process::ERR === $type && empty($config['router'])) {
+            echo $buffer;
+        }
+
+        if (Process::OUT === $type) {
+            echo $buffer;
+        }
+
+    });
+
+}
+
+echo "Exited with code: ", $process->getExitCode(), "\n";
