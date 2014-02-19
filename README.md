@@ -41,10 +41,13 @@ Create a `server.json` file in your project's directory with your custom setting
         "port":5000,
         "docroot":"public",
         "router":"myrouter.php|default",
-        "ini":"mysettings.ini|default"
+        "ini":"mysettings.ini|default",
+        "controller": "mycontroller.php"
     }
 
 The `router` and `ini` file paths are relative to the current working directory. The main `Simphle` script searches for these files in the current working directory first, then in Simphle's `share` directory. The `.php` and `.ini` extensions are not required for preset router and INI files.
+
+The `controller` file path is relative to the document root directory.
 
 
 #### The default router
@@ -57,6 +60,11 @@ Simphle's default router tries to simulate a typical Apache `.htaccess` file:
 
 
 If the requested URI exists tries to fetch it, if not it searches for an `index.php`, finally falls back to a "404 not found" error.
+
+
+#### Using a front controller
+
+By specifying a `controller` settings Simphle uses this file as rewrite target instead of `index.php`, so you can use for example `app.php`.
 
 
 License
