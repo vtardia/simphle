@@ -61,6 +61,22 @@ if (is_readable($_SERVER['DOCUMENT_ROOT'] . $path)) {
     // Process static resource
     return false;
     
+} elseif($controller 
+    && is_readable($_SERVER['DOCUMENT_ROOT'] . '/' . $controller)) {
+    
+    // Log a 404 on the server side because the document
+    // does not exist
+    Server::logAccess(404);
+    
+    // URL Rewriting
+    $_SERVER['SCRIPT_FILENAME'] = $_SERVER['DOCUMENT_ROOT']
+        . '/' . $controller;
+    $_SERVER['SCRIPT_NAME'] = '/' . $controller;
+    
+    // Process controller
+    include $_SERVER['DOCUMENT_ROOT'] . '/' . $controller;
+    exit;
+
 } elseif ($error404 = getenv('error_404')) {
 
     // Use the app error 404 feature...
