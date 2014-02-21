@@ -42,7 +42,14 @@ Create a `server.json` file in your project's directory with your custom setting
         "docroot":"public",
         "router":"myrouter.php|default",
         "ini":"mysettings.ini|default",
-        "controller": "mycontroller.php"
+        "controller": "mycontroller.php",
+        "env": {
+            "myvar": "somevalue",
+            "anothervar": {
+                "one": "foo",
+                "two": "bar"
+            }
+        }
     }
 
 The `router` and `ini` file paths are relative to the current working directory. The main `Simphle` script searches for these files in the current working directory first, then in Simphle's `share` directory. The `.php` and `.ini` extensions are not required for preset router and INI files.
@@ -65,6 +72,11 @@ If the requested URI exists tries to fetch it, if not it searches for an `index.
 #### Using a front controller
 
 By specifying a `controller` settings Simphle uses this file as rewrite target instead of `index.php`, so you can use for example `app.php`.
+
+
+#### Customizing the environment
+
+The `env` section defines environment variables that are passed to the PHP files through the `$_ENV` superglobal. JSON objects are converted to associative arrays.
 
 
 License

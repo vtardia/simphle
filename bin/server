@@ -37,7 +37,8 @@ if (is_readable($config['cwd'] . '/server.json')) {
         'router',
         'controller',
         'index',
-        'errors'
+        'errors',
+        'env'
     );
     
     foreach ($params as $key) {
@@ -138,6 +139,11 @@ if (!empty($config['errors']) && is_array($config['errors'])) {
     foreach($config['errors'] as $error_code => $error_page) {
         $builder->setEnv('error_' . $error_code, $error_page);
     }
+}
+
+// Parse the custom directory index
+if (!empty($config['env'])) {
+    $builder->setEnv('env', serialize($config['env']));
 }
 
 // Start the web server process

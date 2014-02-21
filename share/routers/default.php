@@ -13,6 +13,13 @@ if (!($controller = getenv('controller'))) {
     $controller = null;
 }
 
+// Load environment
+$env = @unserialize(getenv('env'));
+if (false !== $env) {
+    foreach ($env as $k => $val) {
+        $_ENV[$k] = $val;
+    }
+}
 
 // If requesting a directory then serve the default index
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
