@@ -78,6 +78,24 @@ By specifying a `controller` settings Simphle uses this file as rewrite target i
 
 The `env` section defines environment variables that are passed to the PHP files through the `$_ENV` superglobal. JSON objects are converted to associative arrays.
 
+Sometimes the `$_ENV` superglobal is not populated. It depends on the `variables_order` settings in `php.ini`:
+
+    ; This directive determines which super global arrays are registered when PHP
+    ; starts up. If the register_globals directive is enabled, it also determines
+    ; what order variables are populated into the global space. G,P,C,E & S are
+    ; abbreviations for the following respective super globals: GET, POST, COOKIE,
+    ; ENV and SERVER. There is a performance penalty paid for the registration of
+    ; these arrays and because ENV is not as commonly used as the others, ENV is
+    ; is not recommended on productions servers. You can still get access to
+    ; the environment variables through getenv() should you need to.
+    ; Default Value: "EGPCS"
+    ; Development Value: "GPCS"
+    ; Production Value: "GPCS";
+    ; http://php.net/variables-order
+    variables_order = "GPCS"
+
+This setting can be overridden by local `htaccess` or `php.ini` files.
+
 
 License
 -------
