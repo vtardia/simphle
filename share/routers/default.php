@@ -17,7 +17,23 @@ if (!($controller = getenv('controller'))) {
 $env = @unserialize(getenv('env'));
 if (false !== $env) {
     foreach ($env as $k => $val) {
-        $_ENV[$k] = $val;
+
+        // Always insert using putenv()
+        if (is_array($val) || is_object($val)) {
+            putenv(sprintf("%s=%s", $k, serialize($val)));
+        } else {
+            putenv(sprintf("%s=%s", $k, $val));
+        }
+
+        // Insert in $_ENV if settings allow this
+        if (false !== stristr(ini_get('variables_order'), "E")) {
+            $_ENV[$k] = $val;
+        }
+
+        // Insert in $_SERVER if settings allow this
+        if (false !== stristr(ini_get('variables_order'), "S")) {
+            $_SERVER[$k] = $val;
+        }
     }
 }
 
