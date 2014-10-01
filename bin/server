@@ -158,7 +158,7 @@ while ($process->isRunning()) {
     // Intercept STDOUT and STDERR
     $process->wait(function ($type, $buffer) use ($config) {
 
-        if (Process::ERR === $type && empty($config['router'])) {
+        if (Process::ERR === $type /* && empty($config['router']) */ ) {
             echo $buffer;
         }
 
