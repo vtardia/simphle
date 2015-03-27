@@ -1,7 +1,6 @@
 {
     "name": "vtardia/simphle",
     "description": "A quick and simple PHP server for development",
-    "version": "1.0.0-dev",
     "license": "MIT",
     "authors": [
         {
@@ -13,8 +12,8 @@
     "keywords": ["server"],
     "require": {
         "php": ">=5.4",
-        "symfony/process": "*",
-        "monolog/monolog": "*"
+        "symfony/process": "~2.6",
+        "monolog/monolog": "~1.13"
     },
     "autoload": {
         "psr-0": { "Simphle": "src/" }
