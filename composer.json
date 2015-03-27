@@ -13,7 +13,6 @@
     "keywords": ["server"],
     "require": {
         "php": ">=5.4",
-        "ext-http": "*",
         "symfony/process": "*",
         "monolog/monolog": "*"
     },
