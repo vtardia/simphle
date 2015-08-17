@@ -17,10 +17,10 @@ Installation
  1. **Composer**
 
  ```console
- $ composer require vtardia/simphle
+ $ composer [global] require vtardia/simphle
  ```
 
- Use the `-g` option to install it globally on your system
+ Use the `global` option to install it globally on your system
 
  2. **Custom**
 
