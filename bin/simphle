@@ -1,7 +1,14 @@
 #!/usr/bin/env php
 <?php
 
-require_once realpath(dirname(__FILE__) . "/../vendor/autoload.php");
+// Use composers autoload.php if available
+if (file_exists(dirname(__FILE__) . '/../vendor/autoload.php')) {
+    echo ("My Autoload\n");
+    require_once dirname(__FILE__) . '/../vendor/autoload.php';
+} elseif (file_exists(dirname(__FILE__) . '/../../../autoload.php')) {
+    echo ("Project Autoload\n");
+    require_once dirname(__FILE__) . '/../../../autoload.php';
+}
 
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
@@ -23,12 +30,12 @@ if (is_readable($config['cwd'] . '/server.json')) {
         file_get_contents($config['cwd'] . '/server.json'),
         true
     );
-    
+
     if (JSON_ERROR_NONE !== json_last_error()) {
         echo "Invalid server configuration file\n";
         exit(1);
     }
-    
+
     $params = array(
         'host',
         'port',
@@ -40,7 +47,7 @@ if (is_readable($config['cwd'] . '/server.json')) {
         'errors',
         'env'
     );
-    
+
     foreach ($params as $key) {
         if (!empty($data[$key])) {
             $config[$key] = $data[$key];
@@ -79,7 +86,7 @@ if (!empty($config['ini'])) {
         $args[] = '-c';
         $args[] = $inifile;
     } else {
-        
+
         // Search for a preset INI
         $inifile = realpath(
             dirname(__FILE__) . "/../etc/" . $config['ini'] . '.ini'
@@ -98,13 +105,13 @@ if (!empty($config['ini'])) {
 
 // Parse router file declaration
 if (!empty($config['router'])) {
-    
+
     // Search for router in working dir
     $router = realpath($config['cwd']) . '/' . $config['router'];
     if (is_readable($router)) {
         $args[] = $router;
     } else {
-        
+
         // Search for a preset router
         $router = realpath(
             dirname(__FILE__) . "/../share/routers/"
