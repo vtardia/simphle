@@ -13,7 +13,8 @@
     "require": {
         "php": ">=5.4",
         "symfony/process": "~2.6",
-        "monolog/monolog": "~1.13"
+        "monolog/monolog": "~1.13",
+        "vtardia/cli-parser": "^1.0"
     },
     "autoload": {
         "psr-0": { "Simphle": "src/" }
