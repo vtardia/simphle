@@ -10,6 +10,7 @@ if (file_exists(dirname(__FILE__) . '/../vendor/autoload.php')) {
 
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\ProcessBuilder;
+use CLIParser\CliParser;
 
 // Set some defaults
 $config = array(
@@ -51,6 +52,41 @@ if (is_readable($config['cwd'] . '/server.json')) {
             $config[$key] = $data[$key];
         }
     }
+}
+
+// Look for command line arguments to override server.json file
+// Define some options
+$shortOptions = 'H:p:c:r:';
+$longOptions = array(
+    array('controller', true)
+);
+$cli = new CLIParser($shortOptions, $longOptions);
+$program = $cli->program();
+$options = $cli->options();
+$args = $cli->arguments();
+
+if (!empty($options['H'])) {
+    $config['host'] = $options['H'];
+}
+
+if (!empty($options['p'])) {
+    $config['port'] = $options['p'];
+}
+
+if (!empty($options['c'])) {
+    $config['ini'] = $options['c'];
+}
+
+if (!empty($options['r'])) {
+    $config['router'] = $options['r'];
+}
+
+if (!empty($options['controller'])) {
+    $config['controller'] = $options['controller'];
+}
+
+if (!empty($args[0])) {
+    $config['docroot'] = $args[0];
 }
 
 // Compose the header
