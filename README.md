@@ -39,9 +39,19 @@ Usage
 
 Start a server with default settings in the current directory:
 
-    $ cd /path/to/myapp/docroot
-    $ simphle
+```console
+$ cd /path/to/myapp/docroot
+$ simphle
+```
 
+### Intermediate
+
+Start a server with custom settings from the command line:
+
+```console
+$ cd /path/to/myapp
+$ simphle [-H host] [-p port] [-c path/to/php.ini] [-r path/to/router.php] [path/to/docroot]
+```
 
 ### Advanced
 
@@ -75,7 +85,7 @@ Create a `scripts` section in you `composer.json`:
 
 ```json
 "scripts": {
-    "server": "simphle"
+    "server": "simphle [options]"
 }
 ```
 
