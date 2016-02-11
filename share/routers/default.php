@@ -1,5 +1,11 @@
 <?php
-require_once realpath(dirname(__FILE__) . "/../../vendor/autoload.php");
+if (file_exists(dirname(__FILE__) . '/../../vendor/autoload.php')) {
+    require_once dirname(__FILE__) . '/../../vendor/autoload.php';
+} elseif (file_exists(dirname(__FILE__) . '/../../../autoload.php')) {
+    require_once dirname(__FILE__) . '/../../../autoload.php';
+} elseif (file_exists(dirname(__FILE__) . '/../../../../autoload.php')) {
+    require_once dirname(__FILE__) . '/../../../../autoload.php';
+}
 
 use Simphle\Server;
 
@@ -44,12 +50,12 @@ if (empty($ext)) {
     if (is_dir($_SERVER['DOCUMENT_ROOT'] . $path)) {
         $path = rtrim($path, '/') . '/' . $directoryIndex;
     } elseif ($controller) {
-        
+
         // Use provided front controller
         $path = '/' . $controller;
 
     } else {
-        
+
         // Use index.php as front controller
         $path = '/' . $directoryIndex;
     }
@@ -61,34 +67,34 @@ if (is_readable($_SERVER['DOCUMENT_ROOT'] . $path)) {
     // Access logged by the server process
     if ($path == '/' . $controller
         && is_readable($_SERVER['DOCUMENT_ROOT'] . '/' . $controller)) {
-        
+
         Server::logAccess(200);
 
         // URL Rewriting
         $_SERVER['SCRIPT_FILENAME'] = $_SERVER['DOCUMENT_ROOT']
             . '/' . $controller;
         $_SERVER['SCRIPT_NAME'] = '/' . $controller;
-        
+
         // Process controller
         include $_SERVER['DOCUMENT_ROOT'] . '/' . $controller;
         exit;
     }
-    
+
     // Process static resource
     return false;
-    
-} elseif($controller 
+
+} elseif($controller
     && is_readable($_SERVER['DOCUMENT_ROOT'] . '/' . $controller)) {
-    
+
     // Log a 404 on the server side because the document
     // does not exist
     Server::logAccess(404);
-    
+
     // URL Rewriting
     $_SERVER['SCRIPT_FILENAME'] = $_SERVER['DOCUMENT_ROOT']
         . '/' . $controller;
     $_SERVER['SCRIPT_NAME'] = '/' . $controller;
-    
+
     // Process controller
     include $_SERVER['DOCUMENT_ROOT'] . '/' . $controller;
     exit;
